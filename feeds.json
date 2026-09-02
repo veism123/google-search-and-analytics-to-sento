@@ -1,0 +1,27 @@
+[
+  {
+    "name": "ga4-daily-visitors",
+    "source": "windsor",
+    "targetEntity": "Daily visitors",
+    "apiKeyEnv": "WINDSOR_API_KEY",
+    "schedule": "daily",
+    "options": {
+      "connector": "googleanalytics4",
+      "valueField": "totalusers",
+      "granularity": "daily",
+      "lookbackDays": 30
+    }
+  },
+  {
+    "name": "gsc-weekly-clicks",
+    "source": "windsor",
+    "targetEntity": "Organic search clicks (weekly)",
+    "apiKeyEnv": "WINDSOR_API_KEY",
+    "schedule": "daily",
+    "options": {
+      "connector": "searchconsole",
+      "valueField": "clicks",
+      "granularity": "weekly-iso"
+    }
+  }
+]
