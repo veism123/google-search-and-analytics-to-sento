@@ -23,7 +23,7 @@ function required(name: string): string {
 }
 
 export function loadConfig(): Config {
-  const dryRun = process.env.DRY_RUN !== "false";
+  const dryRun = !/^\s*false\s*$/i.test(process.env.DRY_RUN ?? "");
   return {
     // Sento vars are only required once we intend to write.
     sentoMcpUrl: dryRun ? process.env.SENTO_MCP_URL ?? "" : required("SENTO_MCP_URL"),
