@@ -25,10 +25,14 @@ export async function runFeed(
   if (!source) {
     throw new Error(`[${feed.name}] unknown source "${feed.source}" (known: ${Object.keys(sources).join(", ")})`);
   }
-  const apiKey = process.env[feed.apiKeyEnv];
-  if (!apiKey) {
-    log(`[${feed.name}] skipping: env var ${feed.apiKeyEnv} is not set on this deployment`);
-    return;
+  let apiKey = "";
+  if (feed.apiKeyEnv) {
+    const v = process.env[feed.apiKeyEnv];
+    if (!v) {
+      log(`[${feed.name}] skipping: env var ${feed.apiKeyEnv} is not set on this deployment`);
+      return;
+    }
+    apiKey = v;
   }
 
   const items = await source.fetch(feed, apiKey);

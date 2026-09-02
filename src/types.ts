@@ -5,7 +5,9 @@ export interface FeedConfig {
   name: string;
   source: string;
   targetEntity: string;
-  apiKeyEnv: string;
+  // Env var holding the source's API key. Omit for sources that need none
+  // (public-web fetchers); the source then receives an empty string.
+  apiKeyEnv?: string;
   // Which cron schedule runs this feed (default "hourly"). Local runs
   // (npm run once / dev) always run every feed.
   schedule?: "hourly" | "daily";
