@@ -1,4 +1,4 @@
-# Set up Google Analytics to Sento (no coding needed)
+# Set up Google Search and Analytics to Sento (no coding needed)
 
 This courier is a small helper that runs in the cloud and records your
 website's daily visitors and weekly Google Search clicks in your Sento

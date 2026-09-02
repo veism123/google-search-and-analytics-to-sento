@@ -1,4 +1,4 @@
-# Google Analytics to Sento
+# Google Search and Analytics to Sento
 
 Your website numbers live in dashboards nobody opens. With this courier,
 your daily visitors and weekly Google Search clicks land in your Sento

@@ -1,5 +1,5 @@
 {
-  "name": "google-analytics-to-sento",
+  "name": "google-search-and-analytics-to-sento",
   "private": true,
   "type": "module",
   "scripts": {
