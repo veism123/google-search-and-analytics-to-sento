@@ -51,6 +51,30 @@ export class SentoClient {
     return this.call("get_entity", { id });
   }
 
+  // Two-level list read: one entry's full body (raw response text; callers
+  // strip the fence markers).
+  async readListEntry(id: string, entryId: string): Promise<string> {
+    return this.call("get_entity", { id, entry_id: entryId });
+  }
+
+  // Rewrite one list entry in place (living-document lists only). Sends the
+  // full new content; name null keeps no name, structured null clears it.
+  async updateListEntry(args: {
+    entityId: string;
+    entryId: string;
+    name: string | null;
+    body: string;
+    structured: Record<string, unknown> | null;
+  }): Promise<string> {
+    return this.call("update_list_entry", {
+      entity_id: args.entityId,
+      entry_id: args.entryId,
+      name: args.name,
+      body: args.body,
+      structured: args.structured,
+    });
+  }
+
   // The workspace's own composing conventions for the entity. Readable by any
   // caller permitted to write it, so the courier key can fetch it; a person
   // reviews it once and encodes its rules in this courier's config.
