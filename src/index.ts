@@ -2,6 +2,7 @@ import { loadConfig } from "./config.js";
 import { SentoClient } from "./sento.js";
 import { runAllFeeds } from "./pipeline.js";
 import { loadFeeds } from "./feeds.js";
+import { runReport } from "./report.js";
 import { log, logError } from "./log.js";
 
 const config = loadConfig();
@@ -17,6 +18,7 @@ const sento = config.dryRun ? null : new SentoClient(config.sentoMcpUrl, config.
 // after the sources have complete data for yesterday. The marker is process
 // memory only: a restart re-runs them once, which dedupe makes harmless.
 let lastDailyDate = "";
+let lastReportDate = "";
 
 async function cycle(): Promise<void> {
   try {
@@ -26,6 +28,16 @@ async function cycle(): Promise<void> {
     if (dailyFeeds.length > 0 && today !== lastDailyDate && now.getUTCHours() >= 7) {
       lastDailyDate = today;
       await runAllFeeds(dailyFeeds, sento, config.dryRun);
+    }
+    // The marketing report runs Fridays after 07:00 UTC; entry-name dedupe
+    // makes restarts harmless. A report failure never kills the collector.
+    if (now.getUTCDay() === 5 && now.getUTCHours() >= 7 && today !== lastReportDate) {
+      lastReportDate = today;
+      try {
+        await runReport();
+      } catch (err) {
+        logError("report run failed (collector continues)", err);
+      }
     }
   } catch (err) {
     logError("cycle failed", err);
@@ -39,6 +51,17 @@ log(
 if (once) {
   // Supervision runs everything, schedules ignored.
   await runAllFeeds(feeds, sento, config.dryRun);
+} else if (process.env.RUN_REPORT_ON_BOOT === "true") {
+  // One-shot cloud trigger for a supervised report run: set the env var,
+  // redeploy, read the report, remove the var. Weekly dedupe still applies.
+  log("RUN_REPORT_ON_BOOT is set: running the marketing report now");
+  try {
+    await runReport();
+  } catch (err) {
+    logError("report run failed (collector continues)", err);
+  }
+  await cycle();
+  setInterval(cycle, config.pollMinutes * 60_000);
 } else {
   await cycle();
   setInterval(cycle, config.pollMinutes * 60_000);
